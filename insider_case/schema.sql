@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS matches (
 
 CREATE INDEX IF NOT EXISTS idx_matches_week_id ON matches(week_id);
 CREATE INDEX IF NOT EXISTS idx_matches_played ON matches(played);
+CREATE INDEX IF NOT EXISTS idx_matches_played_week_id ON matches(played, week_id);
 
 CREATE TABLE IF NOT EXISTS prediction_snapshots (
     id BIGSERIAL PRIMARY KEY,
@@ -60,3 +61,10 @@ CREATE INDEX IF NOT EXISTS idx_standings_snapshots_week ON standings_snapshots(w
 -- SELECT * FROM standings_snapshots WHERE week_id = (SELECT MAX(week_id) FROM standings_snapshots) ORDER BY position;
 -- Latest prediction snapshot:
 -- SELECT * FROM prediction_snapshots WHERE week_simulated = (SELECT MAX(week_simulated) FROM prediction_snapshots) ORDER BY win_probability DESC;
+-- Full fixture list:
+-- SELECT * FROM matches ORDER BY week_id, id;
+-- Next unplayed week fixtures (same behavior as mode=next):
+-- SELECT * FROM matches WHERE week_id = (
+--   SELECT MIN(week_id) FROM matches WHERE played = false
+-- ) ORDER BY id;
+-- Note: AI commentary is response-only by design; no DB table is used for AI outputs.
